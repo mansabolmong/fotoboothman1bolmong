@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Download Foto - Mobile App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Glassmorphic elements */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Hide scrollbars for slick mobile feel */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-4 text-slate-800">
+
+    <!-- Mobile Frame Simulation Container -->
+    <div class="w-full max-w-md bg-slate-100 min-h-screen md:min-h-[840px] md:max-h-[900px] md:rounded-[40px] shadow-2xl flex flex-col overflow-hidden relative border-0 md:border-8 md:border-slate-800">
+        
+        <!-- App Top Bar -->
+        <header class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 text-white p-4 pt-6 rounded-b-3xl shadow-lg relative z-20">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-inner">
+                        <i class="fa-solid font-bold fa-camera-retro text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-extrabold leading-tight tracking-wide">Multimedia</h1>
+                        <p class="text-xs text-indigo-200 font-medium">MAN 1 Bolmong</p>
+                    </div>
+                </div>
+                <!-- App Mode Switcher -->
+                <div class="bg-black/20 p-1 rounded-full flex items-center border border-white/10">
+                    <button id="btn-tab-customer" onclick="switchTab('customer')" class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-indigo-700 shadow">
+                        <i class="fa-solid fa-user text-[10px] mr-1"></i> Pelanggan
+                    </button>
+                    <button id="btn-tab-admin" onclick="switchTab('admin')" class="px-3 py-1.5 rounded-full text-xs font-semibold text-indigo-100 hover:text-white transition-all duration-200">
+                        <i class="fa-solid fa-lock text-[10px] mr-1"></i> Admin
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-20">
+            
+            <!-- ========================================== -->
+            <!-- VIEW 1: PELANGGAN (DOWNLOAD FOTO)           -->
+            <!-- ========================================== -->
+            <section id="view-customer" class="space-y-5 animate-fade-in">
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-5 text-white shadow-md relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl"></div>
+                    <div class="relative z-10">
+                        <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold tracking-wider uppercase mb-2">Akses Foto Instan</span>
+                        <h2 class="text-xl font-bold mb-1">Download Foto Keren Kamu</h2>
+                        <p class="text-xs text-indigo-100 leading-relaxed">Masukkan kode unik yang diberikan oleh tim fotografer untuk mengunduh seluruh file foto berkualitas tinggi milikmu.</p>
+                    </div>
+                </div>
+
+                <!-- Token Search Box -->
+                <div class="bg-white rounded-3xl p-5 shadow-lg border border-slate-200/80">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-key text-indigo-500 mr-1"></i> Kode Token Pelanggan
+                    </label>
+                    <div class="relative flex items-center">
+                        <input type="text" id="input-token" placeholder="Contoh: FOTO-8A9X2" 
+                               class="w-full pl-4 pr-12 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-base font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all tracking-wider uppercase">
+                        <button onclick="clearCustomerInput()" class="absolute right-3 text-slate-400 hover:text-slate-600 p-2">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Search Button -->
+                    <button id="btn-search" onclick="searchToken()" class="w-full mt-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-indigo-200 flex items-center justify-center space-x-2 active:scale-95 transition-all">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Cari Foto Saya</span>
+                    </button>
+                </div>
+
+                <!-- Search Loading State -->
+                <div id="customer-loading" class="hidden bg-white rounded-3xl p-6 shadow-md text-center space-y-3">
+                    <div class="inline-block animate-spin text-indigo-600 text-3xl">
+                        <i class="fa-solid fa-circle-notch"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-600">Mencari galeri foto...</p>
+                </div>
+
+                <!-- Search Result Card (FOUND) -->
+                <div id="customer-result-success" class="hidden bg-white rounded-3xl p-5 shadow-xl border-2 border-emerald-400/50 space-y-4">
+                    <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <span class="inline-block px-2.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">Foto Ditemukan!</span>
+                            <h3 id="res-customer-name" class="font-bold text-slate-800 text-base">Pelanggan Momen</h3>
+                            <p id="res-token-code" class="text-xs font-mono text-slate-500">TOKEN: -</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-3.5 rounded-2xl text-xs text-slate-600 space-y-1.5 border border-slate-100">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Penyimpanan:</span>
+                            <span class="font-semibold text-slate-700"><i class="fa-brands fa-google-drive text-emerald-500 mr-1"></i>Google Drive</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Status Akses:</span>
+                            <span class="font-semibold text-emerald-600">Download Langsung</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-slate-800 text-sm">Galeri Foto</h4>
+                            <span id="customer-photo-count" class="text-[11px] text-slate-500">0 foto</span>
+                        </div>
+                        <div id="customer-photo-gallery" class="grid grid-cols-2 gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- Search Result Card (NOT FOUND / ERROR) -->
+                <div id="customer-result-error" class="hidden bg-white rounded-3xl p-5 shadow-lg border-2 border-rose-200 space-y-3">
+                    <div class="flex items-center space-x-3 text-rose-600">
+                        <div class="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Kode Token Tidak Ditemukan</h4>
+                            <p class="text-xs text-rose-500">Mohon periksa kembali ejaan token Anda.</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl leading-relaxed">
+                        Tips: Pastikan tidak ada spasi di awal/akhir dan huruf besar/kecil sudah sesuai. Jika masih mengalami kendala, silakan hubungi admin fotografer.
+                    </p>
+                </div>
+
+                <!-- How-to Guide Card -->
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 text-xs text-slate-600 space-y-3">
+                    <h4 class="font-bold text-slate-800 flex items-center text-sm">
+                        <i class="fa-solid fa-circle-question text-indigo-500 mr-2"></i> Cara Mengunduh Foto:
+                    </h4>
+                    <ol class="list-decimal list-inside space-y-1.5 pl-1 text-slate-500">
+                        <li>Masukkan kode token unik dari studio/fotografer.</li>
+                        <li>Klik tombol <strong class="text-slate-700">Cari Foto Saya</strong>.</li>
+                        <li>Galeri hanya menampilkan foto yang terhubung dengan token Anda.</li>
+                        <li>Tekan tombol unduh di bawah foto yang ingin disimpan.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW 2: ADMIN (GENERATE & MANAGED TOKEN)    -->
+            <!-- ========================================== -->
+            <section id="view-admin" class="hidden space-y-5 animate-fade-in">
+                
+                <!-- ADMIN AUTH LOCK OVERLAY -->
+                <div id="admin-auth-panel" class="bg-white rounded-3xl p-6 shadow-xl border border-slate-200 text-center space-y-4">
+                    <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Proteksi Keamanan Admin</h3>
+                        <p class="text-xs text-slate-500 mt-1">Masukkan PIN Admin untuk mengakses panel ini.</p>
+                    </div>
+                    <div class="max-w-xs mx-auto">
+                        <input type="password" id="input-admin-pin" maxlength="6" placeholder="Masukkan PIN Admin" 
+                               class="w-full text-center tracking-widest text-lg font-bold py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-indigo-600">
+                        <button onclick="verifyAdminPIN()" class="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md active:scale-95 transition-all text-sm">
+                            Masuk Panel Admin
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ADMIN MAIN CONTENT (Hidden until authorized) -->
+                <div id="admin-content" class="hidden space-y-5">
+                    
+                    <!-- Admin Header Card -->
+                    <div class="bg-slate-800 rounded-3xl p-5 text-white shadow-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Akses Admin Aktif</span>
+                            <h3 class="text-base font-bold">Generator Token Foto</h3>
+                        </div>
+                        <button onclick="lockAdminPanel()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl text-xs font-semibold transition-all">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                        </button>
+                    </div>
+
+                    <!-- Token Generator Form -->
+                    <div class="bg-white rounded-3xl p-5 shadow-lg border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                            <i class="fa-solid fa-plus-circle text-indigo-600 mr-2"></i> Buat Token Foto Baru
+                        </h4>
+
+                        <!-- Input Customer Name -->
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Pelanggan / Acara</label>
+                            <input type="text" id="admin-input-name" placeholder="Misal: Sdr. Budi - Prewedding" 
+                                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-600">
+                        </div>
+
+                        <button onclick="generateNewToken()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-2xl shadow-md shadow-indigo-100 flex items-center justify-center space-x-2 active:scale-95 transition-all text-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Buat Token & Folder Customer</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-5 shadow-lg border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                            <i class="fa-solid fa-cloud-arrow-up text-indigo-600 mr-2"></i> Unggah Foto Customer
+                        </h4>
+                        <p class="text-[10px] text-slate-500">Folder Drive: fotobooth / DDMMYY / nama customer</p>
+                        <div>
+                            <label for="admin-select-customer" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pilih Customer</label>
+                            <select id="admin-select-customer" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-600">
+                                <option value="">Buat token customer terlebih dahulu</option>
+                            </select>
+                        </div>
+                        <div id="photo-dropzone" class="border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center bg-slate-50 transition-colors">
+                            <input type="file" id="admin-photo-files" accept="image/*" multiple class="hidden">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-500 mb-2"></i>
+                            <p class="text-xs font-bold text-slate-700">Tarik beberapa foto ke sini</p>
+                            <p class="text-[10px] text-slate-500 mt-1">atau pilih beberapa foto, maksimal 10 MB per proses</p>
+                            <button type="button" onclick="document.getElementById('admin-photo-files').click()" class="mt-3 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                                <i class="fa-regular fa-image mr-1 text-indigo-500"></i> Pilih Foto
+                            </button>
+                            <p id="photo-upload-status" aria-live="polite" class="text-[10px] text-slate-500 mt-2"></p>
+                        </div>
+
+                        <!-- Custom Prefix & Token Preview -->
+                        <div class="flex items-center space-x-2">
+                            <div class="flex-1">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Format Token</label>
+                                <input type="text" id="admin-input-prefix" value="FOTO-" placeholder="Prefix" 
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold uppercase focus:outline-none">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Panjang Acak</label>
+                                <select id="admin-select-length" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none">
+                                    <option value="5">5 Karakter</option>
+                                    <option value="6" selected>6 Karakter</option>
+                                    <option value="8">8 Karakter</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Active Tokens List -->
+                    <div class="bg-white rounded-3xl p-5 shadow-lg border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                            <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                                <i class="fa-solid fa-list-check text-indigo-600 mr-2"></i> Daftar Token Aktif
+                            </h4>
+                            <span id="token-count-badge" class="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-full">0 Token</span>
+                        </div>
+
+                        <!-- Search Token Filter -->
+                        <div class="relative">
+                            <input type="text" id="admin-search-list" onkeyup="filterTokenList()" placeholder="Cari nama atau token..." 
+                                   class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+
+                        <!-- List Container -->
+                        <div id="tokens-list-container" class="space-y-3 max-h-80 overflow-y-auto no-scrollbar pt-1">
+                            <!-- Token Items will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Config GAS Backend Settings Drawer Trigger -->
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 text-xs space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-indigo-900"><i class="fa-solid fa-database mr-1"></i> Mode Backend Data</span>
+                            <span id="backend-status-badge" class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold text-[10px]">Memori Lokal (Demo)</span>
+                        </div>
+                        <p class="text-indigo-700 leading-relaxed">
+                            Hubungkan dengan Google Sheets agar token tersimpan permanen tanpa bayar server.
+                        </p>
+                        <button onclick="toggleSetupModal(true)" class="w-full mt-1 bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs hover:bg-indigo-700 transition-all">
+                            <i class="fa-solid fa-gear mr-1"></i> Setup Google Sheets & Apps Script
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+
+        <!-- Toast Notification Container -->
+        <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none max-w-xs w-full">
+            <div class="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs border border-slate-700">
+                <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+                <span id="toast-message" class="font-medium">Pesan notifikasi</span>
+            </div>
+        </div>
+
+        <!-- Modal 1: QR Code Popup -->
+        <div id="modal-qr" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-2xl animate-fade-in">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h4 class="font-bold text-slate-800 text-sm">QR Code Token</h4>
+                    <button onclick="closeQRModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div id="qrcode-container" class="flex justify-center p-3 bg-slate-50 rounded-2xl border"></div>
+                <p id="qr-token-text" class="font-mono text-sm font-bold text-indigo-600 tracking-wider">FOTO-XXXXX</p>
+                <p class="text-[11px] text-slate-500">Scan QR Code ini untuk membuka token secara otomatis.</p>
+                <button onclick="closeQRModal()" class="w-full py-2.5 bg-slate-100 font-bold text-slate-700 text-xs rounded-xl hover:bg-slate-200">Tutup</button>
+            </div>
+        </div>
+
+        <!-- Modal 2: Google Apps Script Setup Guide & API Config -->
+        <div id="modal-setup" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl p-5 max-w-md w-full max-h-[85vh] overflow-y-auto no-scrollbar space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center">
+                        <i class="fa-solid fa-code text-indigo-600 mr-2"></i> Integrasi Google Sheets (GAS)
+                    </h3>
+                    <button onclick="toggleSetupModal(false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+
+                <!-- Input GAS Web App URL -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700">URL Web App Google Apps Script</label>
+                    <input type="url" id="input-gas-url" placeholder="https://script.google.com/macros/s/.../exec" 
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono focus:outline-none focus:border-indigo-600">
+                    <button onclick="saveGASUrl()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs">
+                        Simpan URL Google Apps Script
+                    </button>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Step by step tutorial -->
+                <div class="space-y-3 text-xs text-slate-600">
+                    <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Langkah-Langkah Pemasangan (Gratis):</h4>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-600 pl-1">
+                        <li>Buat <strong>Google Sheets</strong> baru di Google Drive Anda.</li>
+                        <li>Buka menu <strong>Ekstensi &gt; Apps Script</strong>.</li>
+                        <li>Hapus semua kode bawaan, lalu salin (copy) kode Apps Script di bawah ini:</li>
+                    </ol>
+
+                    <!-- Apps Script Code Snippet -->
+                    <div class="relative">
+                                                <pre class="bg-slate-900 text-indigo-300 p-3 rounded-xl text-[10px] overflow-x-auto font-mono max-h-40 leading-relaxed" id="gas-script-code">
+function jsonOutput(data) {
+    return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function ensureSheet() {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+        sheet.appendRow(["Token", "Drive URL", "Customer Name", "Created At", "Folder ID"]);
+    } else if (sheet.getLastColumn() < 5) {
+        sheet.getRange(1, 5).setValue("Folder ID");
+    }
+    return sheet;
+}
+
+function getOrCreateFolder(parent, name) {
+    var folders = parent.getFoldersByName(name);
+    return folders.hasNext() ? folders.next() : parent.createFolder(name);
+}
+
+function doGet(e) {
+  var action = e.parameter.action;
+
+    if (action === "getUploadResult") {
+        var result = CacheService.getScriptCache().get("upload_" + e.parameter.id);
+        var uploadResult = result ? JSON.parse(result) : { status: "pending" };
+        var callback = e.parameter.callback || "";
+        if (/^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) {
+            return ContentService.createTextOutput(callback + "(" + JSON.stringify(uploadResult) + ");")
+                .setMimeType(ContentService.MimeType.JAVASCRIPT);
+        }
+        return jsonOutput(uploadResult);
+    }
+
+    var sheet = ensureSheet();
+    var data = sheet.getDataRange().getValues();
+  
+    if (action === "getToken" || action === "getPhotos") {
+    var searchToken = e.parameter.token;
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0].toString().toUpperCase() === searchToken.toUpperCase()) {
+                var customer = {
+                    token: data[i][0],
+                    driveUrl: data[i][1],
+                    customerName: data[i][2] || "Pelanggan",
+                    createdAt: data[i][3],
+                    folderId: data[i][4] || ""
+                };
+                if (action === "getPhotos") {
+                    if (!customer.folderId) return jsonOutput({ status: "success", data: [] });
+                    var folder = DriveApp.getFolderById(customer.folderId);
+                    var files = folder.getFiles();
+                    var photos = [];
+                    while (files.hasNext()) {
+                        var file = files.next();
+                        if (file.getMimeType().indexOf("image/") === 0) {
+                            var fileId = file.getId();
+                            photos.push({
+                                id: fileId,
+                                name: file.getName(),
+                                thumbnailUrl: "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000",
+                                downloadUrl: "https://drive.google.com/uc?export=download&id=" + fileId
+                            });
+                        }
+                    }
+                    return jsonOutput({ status: "success", data: photos });
+                }
+                return jsonOutput({ status: "success", ...customer });
+      }
+    }
+    return jsonOutput({ status: "error", message: "Token tidak ditemukan" });
+  }
+  
+  if (action === "getAll") {
+    var list = [];
+    for (var i = 1; i < data.length; i++) {
+    list.push({ token: data[i][0], driveUrl: data[i][1], customerName: data[i][2], createdAt: data[i][3], folderId: data[i][4] || "" });
+    }
+    return jsonOutput({ status: "success", data: list });
+  }
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+        if (contents.action === "createToken") {
+            var cache = CacheService.getScriptCache();
+            try {
+                if (!contents.uploadId || !contents.token || !contents.customerName) throw new Error("Data customer tidak lengkap.");
+                var sheet = ensureSheet();
+                var rows = sheet.getDataRange().getValues();
+                for (var row = 1; row < rows.length; row++) {
+                    if (rows[row][0].toString().toUpperCase() === contents.token.toUpperCase()) throw new Error("Token sudah digunakan. Coba buat token baru.");
+                }
+
+                var rootFolder = getOrCreateFolder(DriveApp.getRootFolder(), "fotobooth");
+                var dateFolderName = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "ddMMyy");
+                var dateFolder = getOrCreateFolder(rootFolder, dateFolderName);
+                var customerFolder = dateFolder.createFolder(contents.customerName.trim());
+                customerFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+                var createdAt = new Date().toISOString();
+                var customer = {
+                    token: contents.token,
+                    driveUrl: customerFolder.getUrl(),
+                    customerName: contents.customerName.trim(),
+                    createdAt: createdAt,
+                    folderId: customerFolder.getId()
+                };
+                sheet.appendRow([customer.token, customer.driveUrl, customer.customerName, customer.createdAt, customer.folderId]);
+                cache.put("upload_" + contents.uploadId, JSON.stringify({ status: "success", ...customer }), 600);
+            } catch (createError) {
+                cache.put("upload_" + contents.uploadId, JSON.stringify({ status: "error", message: createError.message }), 600);
+            }
+            return jsonOutput({ status: "accepted" });
+        }
+
+        if (contents.action === "uploadPhotos") {
+            var cache = CacheService.getScriptCache();
+            try {
+                if (!contents.uploadId || !contents.folderId || !Array.isArray(contents.photos) || !contents.photos.length) {
+                    throw new Error("Data foto tidak valid.");
+                }
+                var totalBytes = 0;
+                var decodedPhotos = contents.photos.map(function(photo) {
+                    if (!photo.mimeType || photo.mimeType.indexOf("image/") !== 0) throw new Error("File bukan gambar.");
+                    var bytes = Utilities.base64Decode(photo.data);
+                    totalBytes += bytes.length;
+                    return { photo: photo, bytes: bytes };
+                });
+                if (totalBytes > 10 * 1024 * 1024) throw new Error("Total ukuran foto melebihi 10 MB.");
+
+                var folder = DriveApp.getFolderById(contents.folderId);
+                decodedPhotos.forEach(function(item) {
+                    var file = folder.createFile(Utilities.newBlob(item.bytes, item.photo.mimeType, item.photo.name));
+                    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+                });
+                cache.put("upload_" + contents.uploadId, JSON.stringify({ status: "success", count: contents.photos.length }), 600);
+            } catch (uploadError) {
+                cache.put("upload_" + contents.uploadId, JSON.stringify({ status: "error", message: uploadError.message }), 600);
+            }
+            return jsonOutput({ status: "accepted" });
+        }
+
+        var sheet = ensureSheet();
+    if (sheet.getLastRow() === 0) {
+            sheet.appendRow(["Token", "Drive URL", "Customer Name", "Created At", "Folder ID"]);
+    }
+    if (contents.action === "addToken") {
+            sheet.appendRow([contents.token, contents.driveUrl, contents.customerName, new Date().toISOString(), ""]);
+    return jsonOutput({ status: "success" });
+    }
+    if (contents.action === "deleteToken") {
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (data[i][0].toString() === contents.token) {
+          sheet.deleteRow(i + 1);
+          break;
+        }
+      }
+    return jsonOutput({ status: "success" });
+    }
+  } catch (err) {
+    return jsonOutput({ status: "error", message: err.toString() });
+  }
+}
+                        </pre>
+                        <button onclick="copyGASCode()" class="absolute top-2 right-2 px-2 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold hover:bg-indigo-700">
+                            <i class="fa-solid fa-copy mr-1"></i> Copy Kode
+                        </button>
+                    </div>
+
+                    <ol start="4" class="list-decimal list-inside space-y-2 text-slate-600 pl-1">
+                        <li>Klik <strong>Terapkan (Deploy) &gt; Penerapan baru (New deployment)</strong>.</li>
+                        <li>Pilih Jenis: <strong>Aplikasi Web (Web App)</strong>.</li>
+                        <li>Ubah <em>Jalankan sebagai (Execute as)</em>: <strong>Saya (Me)</strong>.</li>
+                        <li>Ubah <em>Yang memiliki akses (Who has access)</em>: <strong>Siapa saja (Anyone)</strong>.</li>
+                        <li>Klik <strong>Deploy</strong>, izinkan akses Google, lalu salin URL Web App yang dihasilkan ke input di atas. Untuk script yang sudah pernah dipasang, pilih <strong>Kelola deployment &gt; Edit &gt; Versi baru &gt; Deploy</strong> agar fitur unggah aktif.</li>
+                    </ol>
+                    <p class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10px] text-amber-800 leading-relaxed">
+                        <strong>Catatan keamanan:</strong> akses Anyone membuat endpoint Apps Script dapat dipanggil publik, dan PIN di halaman ini hanya demo. Jangan gunakan untuk foto sensitif atau layanan publik tanpa autentikasi backend.
+                    </p>
+                </div>
+
+                <button onclick="toggleSetupModal(false)" class="w-full py-2.5 bg-slate-100 font-bold text-slate-700 text-xs rounded-xl hover:bg-slate-200">
+                    Selesai & Tutup
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // APP STATE & STORAGE MANAGEMENT
+        const DEFAULT_PIN = "qwerty"; // Default PIN for admin access
+
+        let state = {
+            activeTab: 'customer',
+            isAdminAuthorized: false,
+            gasWebAppUrl: localStorage.getItem('picportal_gas_url') || '',
+            tokens: JSON.parse(localStorage.getItem('picportal_mock_tokens')) || [
+                {
+                    token: 'FOTO-DEMO1',
+                    driveUrl: 'https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I0J/view',
+                    customerName: 'Sdr. Andi - Sesi Demo',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    token: 'FOTO-8A9X2',
+                    driveUrl: 'https://drive.google.com',
+                    customerName: 'Ibu Sarah - Family Photo',
+                    createdAt: new Date().toISOString()
+                }
+            ]
+        };
+
+        // Initialize App on DOM Load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkQueryParamToken();
+            updateBackendStatusBadge();
+            renderTokenList();
+            setupPhotoUpload();
+            
+            if (state.gasWebAppUrl) {
+                document.getElementById('input-gas-url').value = state.gasWebAppUrl;
+                syncWithGASBackend();
+            }
+        });
+
+        function setupPhotoUpload() {
+            const dropzone = document.getElementById('photo-dropzone');
+            const fileInput = document.getElementById('admin-photo-files');
+            const highlight = (active) => dropzone.classList.toggle('border-indigo-500', active);
+
+            fileInput.addEventListener('change', () => uploadPhotos(fileInput.files));
+            ['dragenter', 'dragover'].forEach(eventName => dropzone.addEventListener(eventName, event => {
+                event.preventDefault();
+                highlight(true);
+            }));
+            ['dragleave', 'drop'].forEach(eventName => dropzone.addEventListener(eventName, event => {
+                event.preventDefault();
+                highlight(false);
+            }));
+            dropzone.addEventListener('drop', event => uploadPhotos(event.dataTransfer.files));
+        }
+
+        async function uploadPhotos(fileList) {
+            const files = Array.from(fileList || []);
+            const status = document.getElementById('photo-upload-status');
+            const fileInput = document.getElementById('admin-photo-files');
+            const selectedToken = document.getElementById('admin-select-customer').value;
+            const selectedCustomer = state.tokens.find(token => token.token === selectedToken);
+            if (!files.length) return;
+            if (!selectedCustomer || !selectedCustomer.folderId) {
+                showToast('Pilih customer dengan folder Drive terlebih dahulu', 'error');
+                status.textContent = 'Buat token customer baru atau pilih customer yang memiliki folder Drive.';
+                fileInput.value = '';
+                return;
+            }
+            if (!state.gasWebAppUrl) {
+                showToast('Atur URL Apps Script terlebih dahulu untuk unggah foto', 'error');
+                status.textContent = 'Hubungkan Google Apps Script melalui pengaturan backend terlebih dahulu.';
+                fileInput.value = '';
+                return;
+            }
+            if (files.some(file => !file.type.startsWith('image/'))) {
+                showToast('Pilih file foto berformat gambar saja', 'error');
+                fileInput.value = '';
+                return;
+            }
+            const totalBytes = files.reduce((total, file) => total + file.size, 0);
+            if (files.some(file => file.size > 10 * 1024 * 1024) || totalBytes > 10 * 1024 * 1024) {
+                showToast('Total foto maksimal 10 MB per proses unggah', 'error');
+                status.textContent = 'Pilih foto dengan total ukuran maksimal 10 MB.';
+                fileInput.value = '';
+                return;
+            }
+
+            status.textContent = `Menyiapkan ${files.length} foto...`;
+            try {
+                const photos = await Promise.all(files.map(file => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve({
+                        name: file.name,
+                        mimeType: file.type,
+                        data: reader.result.split(',')[1]
+                    });
+                    reader.onerror = () => reject(new Error(`Gagal membaca ${file.name}`));
+                    reader.readAsDataURL(file);
+                })));
+                const uploadId = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+                status.textContent = `Mengunggah foto untuk ${selectedCustomer.customerName}...`;
+                const result = await postGasOperation({
+                    action: 'uploadPhotos',
+                    uploadId,
+                    folderId: selectedCustomer.folderId,
+                    photos
+                }, uploadId);
+                if (result.status !== 'success') throw new Error(result.message || 'Upload gagal.');
+
+                status.textContent = `${files.length} foto berhasil ditambahkan ke folder ${selectedCustomer.customerName}.`;
+                showToast(`Foto untuk ${selectedCustomer.customerName} berhasil diunggah!`, 'success');
+            } catch (error) {
+                console.error('Photo upload failed:', error);
+                status.textContent = error.message || 'Unggah gagal. Coba lagi.';
+                showToast(error.message || 'Unggah foto gagal', 'error');
+            } finally {
+                fileInput.value = '';
+            }
+        }
+
+        async function postGasOperation(payload, operationId) {
+            await fetch(state.gasWebAppUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+                body: JSON.stringify(payload)
+            });
+            return pollGasOperation(operationId);
+        }
+
+        function pollGasOperation(operationId) {
+            return new Promise((resolve, reject) => {
+                const callbackName = `photoUpload_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+                const script = document.createElement('script');
+                const timeout = setTimeout(() => finish(new Error('Waktu tunggu upload habis.')), 90000);
+                let attempts = 0;
+
+                function finish(error, result) {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    script.remove();
+                    error ? reject(error) : resolve(result);
+                }
+
+                function poll() {
+                    if (attempts++ >= 30) return finish(new Error('Waktu tunggu upload habis.'));
+                    script.src = `${state.gasWebAppUrl}?action=getUploadResult&id=${encodeURIComponent(operationId)}&callback=${callbackName}&t=${Date.now()}`;
+                }
+
+                window[callbackName] = result => {
+                    if (result.status === 'pending') return setTimeout(poll, 3000);
+                    finish(null, result);
+                };
+                script.onerror = () => finish(new Error('Tidak dapat membaca status upload dari Apps Script.'));
+                document.head.appendChild(script);
+                poll();
+            });
+        }
+
+        // TAB SWITCHING LOGIC
+        function switchTab(tab) {
+            state.activeTab = tab;
+            const btnCustomer = document.getElementById('btn-tab-customer');
+            const btnAdmin = document.getElementById('btn-tab-admin');
+            const viewCustomer = document.getElementById('view-customer');
+            const viewAdmin = document.getElementById('view-admin');
+
+            if (tab === 'customer') {
+                btnCustomer.className = "px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-indigo-700 shadow";
+                btnAdmin.className = "px-3 py-1.5 rounded-full text-xs font-semibold text-indigo-100 hover:text-white transition-all duration-200";
+                viewCustomer.classList.remove('hidden');
+                viewAdmin.classList.add('hidden');
+            } else {
+                btnAdmin.className = "px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 bg-white text-indigo-700 shadow";
+                btnCustomer.className = "px-3 py-1.5 rounded-full text-xs font-semibold text-indigo-100 hover:text-white transition-all duration-200";
+                viewAdmin.classList.remove('hidden');
+                viewCustomer.classList.add('hidden');
+            }
+        }
+
+        // CUSTOMER: SEARCH TOKEN
+        async function searchToken() {
+            const inputToken = document.getElementById('input-token').value.trim().toUpperCase();
+            const loading = document.getElementById('customer-loading');
+            const resultSuccess = document.getElementById('customer-result-success');
+            const resultError = document.getElementById('customer-result-error');
+
+            if (!inputToken) {
+                showToast('Masukkan kode token Anda terlebih dahulu', 'error');
+                return;
+            }
+
+            loading.classList.remove('hidden');
+            resultSuccess.classList.add('hidden');
+            resultError.classList.add('hidden');
+
+            try {
+                if (!state.gasWebAppUrl) throw new Error('Backend Google Apps Script belum diatur.');
+                const tokenResponse = await fetch(`${state.gasWebAppUrl}?action=getToken&token=${encodeURIComponent(inputToken)}`);
+                const foundData = await tokenResponse.json();
+                if (foundData.status !== 'success') throw new Error('Token tidak ditemukan.');
+
+                const photosResponse = await fetch(`${state.gasWebAppUrl}?action=getPhotos&token=${encodeURIComponent(inputToken)}`);
+                const photosData = await photosResponse.json();
+                if (photosData.status !== 'success') throw new Error(photosData.message || 'Galeri foto tidak dapat dimuat.');
+
+                document.getElementById('res-customer-name').innerText = foundData.customerName || 'Pelanggan Momen';
+                document.getElementById('res-token-code').innerText = `TOKEN: ${foundData.token}`;
+                renderCustomerGallery(photosData.data || []);
+                resultSuccess.classList.remove('hidden');
+                showToast('Galeri foto berhasil dibuka', 'success');
+            } catch (error) {
+                resultError.classList.remove('hidden');
+                showToast(error.message || 'Terjadi kesalahan saat mencari', 'error');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function renderCustomerGallery(photos) {
+            const gallery = document.getElementById('customer-photo-gallery');
+            document.getElementById('customer-photo-count').innerText = `${photos.length} foto`;
+            if (!photos.length) {
+                gallery.innerHTML = '<p class="col-span-2 py-8 text-center text-xs text-slate-500">Foto untuk customer ini belum diunggah.</p>';
+                return;
+            }
+
+            gallery.innerHTML = photos.map(photo => `
+                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                    <img src="${escapeHtml(photo.thumbnailUrl)}" alt="${escapeHtml(photo.name)}" loading="lazy" class="w-full aspect-square object-cover bg-slate-100">
+                    <div class="p-2.5 space-y-2">
+                        <p class="truncate text-[10px] font-medium text-slate-600" title="${escapeHtml(photo.name)}">${escapeHtml(photo.name)}</p>
+                        <a href="${escapeHtml(photo.downloadUrl)}" target="_blank" rel="noopener noreferrer" class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700">
+                            <i class="fa-solid fa-download"></i> Unduh Foto
+                        </a>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function clearCustomerInput() {
+            document.getElementById('input-token').value = '';
+            document.getElementById('customer-result-success').classList.add('hidden');
+            document.getElementById('customer-result-error').classList.add('hidden');
+        }
+
+        // ADMIN: VERIFY PIN
+        function verifyAdminPIN() {
+            const pinInput = document.getElementById('input-admin-pin').value;
+            if (pinInput === DEFAULT_PIN || pinInput === "qwerty") {
+                state.isAdminAuthorized = true;
+                document.getElementById('admin-auth-panel').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                document.getElementById('input-admin-pin').value = '';
+                showToast('Akses Admin berhasil!', 'success');
+            } else {
+                showToast('PIN Admin salah!', 'error');
+            }
+        }
+
+        function lockAdminPanel() {
+            state.isAdminAuthorized = false;
+            document.getElementById('admin-auth-panel').classList.remove('hidden');
+            document.getElementById('admin-content').classList.add('hidden');
+            showToast('Panel Admin dikunci', 'info');
+        }
+
+        // ADMIN: GENERATE TOKEN
+        async function generateNewToken() {
+            const name = document.getElementById('admin-input-name').value.trim();
+            const prefix = document.getElementById('admin-input-prefix').value.trim().toUpperCase() || 'FOTO-';
+            const length = parseInt(document.getElementById('admin-select-length').value) || 6;
+
+            if (!name) {
+                showToast('Nama customer wajib diisi!', 'error');
+                return;
+            }
+            if (!state.gasWebAppUrl) {
+                showToast('Atur URL Apps Script sebelum membuat token', 'error');
+                return;
+            }
+
+            const randomChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let randomStr = '';
+            for (let i = 0; i < length; i++) {
+                randomStr += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+            }
+            const generatedToken = `${prefix}${randomStr}`;
+            const operationId = `token_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            const button = document.querySelector('button[onclick="generateNewToken()"]');
+            button.disabled = true;
+            try {
+                const result = await postGasOperation({
+                    action: 'createToken',
+                    uploadId: operationId,
+                    token: generatedToken,
+                    customerName: name
+                }, operationId);
+                if (result.status !== 'success') throw new Error(result.message || 'Token dan folder gagal dibuat.');
+
+                state.tokens = state.tokens.filter(token => token.token !== result.token);
+                state.tokens.unshift(result);
+                saveLocalTokens();
+                document.getElementById('admin-input-name').value = '';
+                renderTokenList();
+                document.getElementById('admin-select-customer').value = result.token;
+                showToast(`Token ${result.token} dan folder customer berhasil dibuat`, 'success');
+            } catch (error) {
+                showToast(error.message || 'Gagal membuat token customer', 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // RENDER ADMIN TOKEN LIST
+        function renderTokenList(filterText = '') {
+            const container = document.getElementById('tokens-list-container');
+            const badge = document.getElementById('token-count-badge');
+            
+            const filtered = state.tokens.filter(t => 
+                t.token.toLowerCase().includes(filterText.toLowerCase()) || 
+                t.customerName.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            populateAdminCustomerSelect();
+            badge.innerText = `${filtered.length} Token`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 text-slate-400 text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-1 block"></i>
+                        Belum ada token tersimpan.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(t => `
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col space-y-2 text-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800">${escapeHtml(t.customerName)}</span>
+                        <span class="font-mono font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[11px]">${escapeHtml(t.token)}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 truncate">
+                        <i class="fa-brands fa-google-drive mr-1"></i>${escapeHtml(t.driveUrl)}
+                    </div>
+                    <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                        <div class="flex space-x-1">
+                            <button onclick="copyToClipboard('${t.token}', 'Kode Token')" class="px-2.5 py-1 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 font-semibold text-slate-700 text-[10px]">
+                                <i class="fa-solid fa-copy mr-1 text-indigo-500"></i> Copy Kode
+                            </button>
+                            <button onclick="copyShareLink('${t.token}')" class="px-2.5 py-1 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 font-semibold text-slate-700 text-[10px]">
+                                <i class="fa-solid fa-share-nodes mr-1 text-emerald-500"></i> Copy Link
+                            </button>
+                            <button onclick="showQRCode('${t.token}')" class="px-2 py-1 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 font-semibold text-slate-700 text-[10px]">
+                                <i class="fa-solid fa-qrcode text-slate-600"></i>
+                            </button>
+                        </div>
+                        <button onclick="deleteToken('${t.token}')" class="px-2 py-1 text-rose-500 hover:bg-rose-50 rounded-lg">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateAdminCustomerSelect() {
+            const select = document.getElementById('admin-select-customer');
+            const selectedToken = select.value;
+            const uploadableTokens = state.tokens.filter(token => token.folderId);
+            const placeholder = uploadableTokens.length ? 'Pilih customer...' : 'Buat token customer terlebih dahulu';
+            select.innerHTML = `<option value="">${placeholder}</option>` + uploadableTokens.map(token =>
+                `<option value="${escapeHtml(token.token)}">${escapeHtml(token.customerName)} - ${escapeHtml(token.token)}</option>`
+            ).join('');
+            if (uploadableTokens.some(token => token.token === selectedToken)) select.value = selectedToken;
+        }
+
+        function filterTokenList() {
+            const query = document.getElementById('admin-search-list').value;
+            renderTokenList(query);
+        }
+
+        function deleteToken(token) {
+            state.tokens = state.tokens.filter(t => t.token !== token);
+            saveLocalTokens();
+
+            if (state.gasWebAppUrl) {
+                fetch(state.gasWebAppUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'deleteToken', token: token })
+                });
+            }
+
+            renderTokenList();
+            showToast(`Token ${token} dihapus`, 'info');
+        }
+
+        // HELPERS: QR CODE, CLIPBOARD, AND TOASTS
+        function showQRCode(token) {
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = '';
+            
+            // Generate full URL link with query param
+            const directUrl = `${window.location.origin}${window.location.pathname}?token=${token}`;
+
+            new QRCode(qrContainer, {
+                text: directUrl,
+                width: 160,
+                height: 160,
+                colorDark: "#4f46e5",
+                colorLight: "#ffffff"
+            });
+
+            document.getElementById('qr-token-text').innerText = token;
+            document.getElementById('modal-qr').classList.remove('hidden');
+        }
+
+        function closeQRModal() {
+            document.getElementById('modal-qr').classList.add('hidden');
+        }
+
+        function copyToClipboard(text, label = 'Teks') {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`${label} berhasil disalin!`, 'success');
+        }
+
+        function copyShareLink(token) {
+            const link = `${window.location.origin}${window.location.pathname}?token=${token}`;
+            copyToClipboard(link, 'Link Langsung Pelanggan');
+        }
+
+        function checkQueryParamToken() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenParam = urlParams.get('token');
+            if (tokenParam) {
+                document.getElementById('input-token').value = tokenParam;
+                searchToken();
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = msg;
+            if (type === 'success') {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-base";
+            } else if (type === 'error') {
+                toastIcon.className = "fa-solid fa-circle-xmark text-rose-400 text-base";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-info text-sky-400 text-base";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        function toggleSetupModal(show) {
+            const modal = document.getElementById('modal-setup');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function saveGASUrl() {
+            const url = document.getElementById('input-gas-url').value.trim();
+            state.gasWebAppUrl = url;
+            localStorage.setItem('picportal_gas_url', url);
+            updateBackendStatusBadge();
+            toggleSetupModal(false);
+            showToast('URL GAS berhasil disimpan!', 'success');
+            if (url) syncWithGASBackend();
+        }
+
+        async function syncWithGASBackend() {
+            if (!state.gasWebAppUrl) return;
+            try {
+                const res = await fetch(`${state.gasWebAppUrl}?action=getAll`);
+                const json = await res.json();
+                if (json.status === 'success' && Array.isArray(json.data)) {
+                    state.tokens = json.data;
+                    saveLocalTokens();
+                    renderTokenList();
+                }
+            } catch (err) {
+                console.warn("Error syncing with GAS:", err);
+            }
+        }
+
+        function updateBackendStatusBadge() {
+            const badge = document.getElementById('backend-status-badge');
+            if (state.gasWebAppUrl) {
+                badge.className = "px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]";
+                badge.innerText = "Google Sheets Active";
+            } else {
+                badge.className = "px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold text-[10px]";
+                badge.innerText = "Memori Lokal (Demo)";
+            }
+        }
+
+        function saveLocalTokens() {
+            localStorage.setItem('picportal_mock_tokens', JSON.stringify(state.tokens));
+        }
+
+        function copyGASCode() {
+            const codeText = document.getElementById('gas-script-code').innerText;
+            copyToClipboard(codeText, 'Kode Google Apps Script');
+        }
+
+        function escapeHtml(str) {
+            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : '';
+        }
+    </script>
+</body>
+</html>
